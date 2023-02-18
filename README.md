@@ -1,2 +1,2 @@
 # rws_example
-Interview example from rws
+Interview example for rws.
