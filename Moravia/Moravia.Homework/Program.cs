@@ -18,11 +18,12 @@ namespace Moravia.Homework
         {
             var sourceFileName = Path.Combine(Environment.CurrentDirectory, "..\\..\\..\\SourceFiles\\Document1.xml");
             var targetFileName = Path.Combine(Environment.CurrentDirectory, "..\\..\\..\\TargetFiles\\Document1.json");
+            string input = string.Empty;
             try
             {
                 FileStream sourceStream = File.Open(sourceFileName, FileMode.Open);
                 var reader = new StreamReader(sourceStream);
-                string input = reader.ReadToEnd();
+                input = reader.ReadToEnd();
             }
             catch (Exception ex)
             {
