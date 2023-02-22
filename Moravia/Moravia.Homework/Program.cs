@@ -1,44 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Xml.Linq;
-using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Moravia.Domain.Interfaces;
+using Moravia.Implementation;
+using Moravia.Implementation.FormatProviders;
+using Moravia.Implementation.StorageProviders;
 
 namespace Moravia.Homework
 {
-    public class Document
-    {
-        public string Title { get; set; }
-        public string Text { get; set; }
-    }
 
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            var sourceFileName = Path.Combine(Environment.CurrentDirectory, "..\\..\\..\\SourceFiles\\Document1.xml");
-            var targetFileName = Path.Combine(Environment.CurrentDirectory, "..\\..\\..\\TargetFiles\\Document1.json");
-            string input = string.Empty;
-            try
+            if (args.Length == 0)
             {
-                FileStream sourceStream = File.Open(sourceFileName, FileMode.Open);
-                var reader = new StreamReader(sourceStream);
-                input = reader.ReadToEnd();
+                
             }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            var xdoc = XDocument.Parse(input);
-            var doc = new Document
-            {
-                Title = xdoc.Root.Element("title").Value,
-                Text = xdoc.Root.Element("text").Value
-            };
-            var serializedDoc = JsonConvert.SerializeObject(doc);
-            var targetStream = File.Open(targetFileName, FileMode.Create, FileAccess.Write);
-            var sw = new StreamWriter(targetStream);
-            sw.Write(serializedDoc);
+
+            await Host.CreateDefaultBuilder(args)
+                .ConfigureServices((hostContext, services) =>
+                {                    
+                    // resolver factory
+                    services.AddSingleton<IProviderResolver, ProviderResolver>();
+
+                    // format providers
+                    services.AddTransient<JsonFormatProvider>();
+                    services.AddTransient<XmlFormatProvider>();
+                    services.AddTransient<YamlFormatProvider>();
+
+                    // storage providers
+                    services.AddTransient<LocalDiskProvider>();
+
+                })
+                .RunConsoleAsync();
+
+            //CreateHostBuilder(args).Build().Run();
+
+         
         }
+
+        //public static IHostBuilder CreateHostBuilder(string[] args) =>
+        //    Host.CreateDefaultBuilder(args)
+        //        .ConfigureServices((hostContext, services) =>
+        //        {
+        //            // resolver factory
+        //            services.AddSingleton<IProviderResolver, ProviderResolver>();
+
+        //            // format providers
+        //            services.AddTransient<JsonFormatProvider>();
+        //            services.AddTransient<XmlFormatProvider>();
+        //            services.AddTransient<YamlFormatProvider>();
+
+        //            // storage providers
+        //            services.AddTransient<LocalDiskProvider>();
+
+        //            //services.AddScoped<IFileSystem, FileSystem>();
+
+
+        //        });
     }
 }

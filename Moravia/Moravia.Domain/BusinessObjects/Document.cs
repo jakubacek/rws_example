@@ -1,55 +1,52 @@
 ﻿using Moravia.Domain.Interfaces;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using Moravia.Domain.Internal;
 
 namespace Moravia.Domain.BusinessObjects
 {
     /// <summary>
     /// Document
     /// </summary>
-    public class Document : IDocument
+    public class Document : IFormatDocument
     {
         /// <summary>
         /// Initialize new instance of Document.
         /// </summary>
+        /// <param name="documentName">Document name.</param>
         /// <param name="title">Title of document.</param>
         /// <param name="text">Text of document.</param>
-        /// <param name="name">Document name.</param>
-        public Document(string title, string text, string name)
+        public Document(string documentName, string title, string text)
         {
+            DocumentName = documentName;
             Title = title;
             Text = text;
-            DocumentName = name;
         }
 
-        /// <summary>
-        /// Initialize new instance of Document.
-        /// </summary>
-        public Document()
-        {
-
-        }
+        public Document() { }
 
         /// <summary>
-        /// Document title.
+        /// FormatDocument title.
         /// </summary>
         public string Title { get; set; }
 
         /// <summary>
-        /// Document text.
+        /// FormatDocument text.
         /// </summary>
-        public string Text { get; set; }
+        public string Text { get; set; } 
 
         /// <summary>
-        /// Document name.
+        /// FormatDocument name.
         /// </summary>
         public string DocumentName { get; set; }
 
         /// <summary>
-        /// Export document content to key/value dictionary.
+        /// Export formatDocument content to key/value dictionary.
         /// </summary>
-        /// <returns>Document content.</returns>
-        public IDictionary<string, string> ExportContent()
+        /// <returns>FormatDocument content.</returns>
+        public PairList<string, string> ExportContent()
         {
-            var result = new Dictionary<string, string>
+            var result = new PairList<string, string>
             {
                 { nameof(Title), Title },
                 { nameof(Text), Text }
@@ -58,11 +55,11 @@ namespace Moravia.Domain.BusinessObjects
         }
 
         /// <summary>
-        /// Import document from key/value dictionary.
+        /// Import formatDocument from key/value dictionary.
         /// </summary>
         /// <param name="content">Content in key/value dictionary.</param>
-        /// <param name="documentName">Document name.</param>
-        public void ImportContent(IDictionary<string, string> content, string documentName)
+        /// <param name="documentName">FormatDocument name.</param>
+        public void ImportContent(PairList<string, string> content, string documentName)
         {
             DocumentName = documentName;
             Title = content?[nameof(Title)] ?? string.Empty;
@@ -75,7 +72,7 @@ namespace Moravia.Domain.BusinessObjects
         /// <returns>String representation.</returns>
         public override string ToString()
         {
-            return $"{Title} {Text}";
+            return $"{DocumentName} {Title} {Text}";
         }
 
         /// <summary>
@@ -84,9 +81,10 @@ namespace Moravia.Domain.BusinessObjects
         /// <returns>Hash Code.</returns>
         public override int GetHashCode()
         {
+            var name = DocumentName ?? string.Empty;
             var title = Title ?? string.Empty;
             var text = Text ?? string.Empty;
-            var name = DocumentName ?? string.Empty;
+
             return title.GetHashCode() * 17 + text.GetHashCode() + name.GetHashCode();
         }
 
