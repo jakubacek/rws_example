@@ -1,4 +1,4 @@
-﻿using Moravia.Domain.Constants;
+﻿using Moravia.Domain.Enums;
 
 namespace Moravia.Domain.Interfaces
 {

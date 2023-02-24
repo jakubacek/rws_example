@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using Moravia.Domain.Constants;
+using Moravia.Domain.Enums;
 using Moravia.Domain.Interfaces;
-using Moravia.Domain.Internal;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace Moravia.Implementation.FormatProviders
 {
@@ -10,6 +10,7 @@ namespace Moravia.Implementation.FormatProviders
     /// <summary>
     /// Json format provider.
     /// </summary>
+    /// <seealso cref="Moravia.Domain.Interfaces.IDocumentFormatProvider" />
     public class JsonFormatProvider : IDocumentFormatProvider
     {
         /// <summary>
@@ -31,30 +32,54 @@ namespace Moravia.Implementation.FormatProviders
         /// </summary>
         public FormatType FormatType => FormatType.Json;
 
-
-        public async Task<PairList<string, string>> LoadDocumentFromFormat(Stream inputStream, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Loads the document from format.
+        /// </summary>
+        /// <typeparam name="T">Type of document.</typeparam>
+        /// <param name="inputStream">The input stream.</param>
+        /// <returns>Loaded document from stream input.</returns>
+        public T LoadDocumentFromFormat<T>(Stream inputStream) where T : class, IFormatDocument
         {
+
             if (inputStream is { CanRead: true })
             {
                 try
                 {
                     using var strReader = new StreamReader(inputStream);
-                    var content = await strReader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
-                    
-                    var resultContent = JsonConvert.DeserializeObject(content) as PairList<string, string>;
-                    return resultContent ?? new PairList<string, string>();
+                    var content = strReader.ReadToEnd();
+
+                    var resultContent = JsonConvert.DeserializeObject<T>(content);
+                    return resultContent;
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error while executing {method} in {provider}", nameof(LoadDocumentFromFormat), nameof(JsonFormatProvider));
+                    _logger.LogError(ex, "Error while executing {method} in {provider}.", nameof(LoadDocumentFromFormat), nameof(JsonFormatProvider));
                 }
             }
-            return new PairList<string, string>();
+
+            return null;
         }
 
-        public byte[] SaveDocumentToFormat(PairList<string, string> documentContent)
+        /// <summary>
+        /// Saves the document to format.
+        /// </summary>
+        /// <typeparam name="T">Type of document.</typeparam>
+        /// <param name="documentContent">Content of the document.</param>
+        /// <returns>UTF-8 encoded text in result format in byte array.</returns>
+        public byte[] SaveDocumentToFormat<T>(T documentContent) where T : class, IFormatDocument
         {
-            throw new NotImplementedException();
+            try
+            {
+                var stringResult = JsonConvert.SerializeObject(documentContent);
+                var byteResult = Encoding.UTF8.GetBytes(stringResult);
+                return byteResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while executing {method} in {provider}.", nameof(SaveDocumentToFormat), nameof(JsonFormatProvider));
+            }
+
+            return new byte[] { };
         }
     }
 }

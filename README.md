@@ -76,7 +76,7 @@ Interview example for rws.
         - Business objects like Document
         - Interface definition
             - IStorageProvider with methods Save, Read methods.
-            - IFormatProvider with methods Serialize, Deserialize
+            - IFormatProvider with methods LoadDocumentFromFormat, SaveDocumentToFormat
     - Moravia.StorageProviders (implementations of IStorageProvider)
     - Moravia.FormatProviders (implementations of IFormatProvider)
     - Moravia.Console

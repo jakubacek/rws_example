@@ -1,13 +1,15 @@
 ﻿using Moravia.Domain.Interfaces;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using Moravia.Domain.Internal;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using System.Xml.Serialization;
+using YamlDotNet.Serialization;
 
 namespace Moravia.Domain.BusinessObjects
 {
     /// <summary>
     /// Document
     /// </summary>
+    [Serializable]
     public class Document : IFormatDocument
     {
         /// <summary>
@@ -33,38 +35,17 @@ namespace Moravia.Domain.BusinessObjects
         /// <summary>
         /// FormatDocument text.
         /// </summary>
-        public string Text { get; set; } 
+        public string Text { get; set; }
 
         /// <summary>
         /// FormatDocument name.
         /// </summary>
+        [JsonIgnore]
+        [XmlIgnore]
+        [IgnoreDataMember]
+        [YamlIgnore]
         public string DocumentName { get; set; }
 
-        /// <summary>
-        /// Export formatDocument content to key/value dictionary.
-        /// </summary>
-        /// <returns>FormatDocument content.</returns>
-        public PairList<string, string> ExportContent()
-        {
-            var result = new PairList<string, string>
-            {
-                { nameof(Title), Title },
-                { nameof(Text), Text }
-            };
-            return result;
-        }
-
-        /// <summary>
-        /// Import formatDocument from key/value dictionary.
-        /// </summary>
-        /// <param name="content">Content in key/value dictionary.</param>
-        /// <param name="documentName">FormatDocument name.</param>
-        public void ImportContent(PairList<string, string> content, string documentName)
-        {
-            DocumentName = documentName;
-            Title = content?[nameof(Title)] ?? string.Empty;
-            Text = content?[nameof(Text)] ?? string.Empty;
-        }
 
         /// <summary>
         /// To String implementation.

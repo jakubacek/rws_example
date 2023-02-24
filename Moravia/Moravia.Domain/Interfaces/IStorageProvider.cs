@@ -1,4 +1,4 @@
-﻿using Moravia.Domain.Constants;
+﻿using Moravia.Domain.Enums;
 
 namespace Moravia.Domain.Interfaces
 {
@@ -13,9 +13,9 @@ namespace Moravia.Domain.Interfaces
         StorageType StorageType { get; }
 
         /// <summary>
-        /// Save stream content to storage.
+        /// Save content to storage.
         /// </summary>
-        /// <param name="documentName">Path identifier.</param>
+        /// <param name="documentName">Document name.</param>
         /// <param name="content">Stream content to store.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Result task.</returns>
@@ -24,9 +24,9 @@ namespace Moravia.Domain.Interfaces
         /// <summary>
         /// Load content from storage.
         /// </summary>
-        /// <param name="documentName">Storage path identifier.</param>
+        /// <param name="documentName">Document name.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Loaded stream.</returns>
-        Stream  Load(string documentName, CancellationToken cancellationToken = default);
+        Task<Stream> Load(string documentName, CancellationToken cancellationToken = default);
     }
 }
